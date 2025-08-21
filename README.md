@@ -154,11 +154,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 —>Our backend User endpoint is available at http://localhost:8080/api/recipe
 
-—>Next create the src/component/RecipeTable.js. Refer "
+—>Next create the src/component/RecipeTable.js. Refer "RecipeTable.js" file.
 
-—> Next Create the src/service/RecipeService.js
+—> Next Create the src/service/RecipeService.js. Refer "RecipeService.js" file.
 
-—>Modify the App.js
+—>Modify the App.js. Refer "App.js" file.
 
 —>Run the react app
 npm start
