@@ -1,0 +1,206 @@
+Spring Boot REST Controller (recipeAPI.java)
+
+This controller provides RESTful endpoints for accessing and querying recipes stored in the database. It leverages Spring MVC annotations and Spring Data JPA pagination for efficient querying.
+
+Technical Workflow
+1. Class-Level Annotations
+
+@RestController
+@RequestMapping("/api/recipes")
+
+
+@RestController: Marks the class as a REST API controller (automatically adds @ResponseBody to methods).
+
+@RequestMapping("/api/recipes"): Base URL for all endpoints in this controller.
+
+2. Dependency Injection
+
+private final RecipeSer recipeSer;
+
+public recipeAPI(RecipeSer recipeSer) {
+    this.recipeSer = recipeSer;
+}
+
+
+Injects the service layer (RecipeSer) into the controller.
+
+Ensures a clean separation of concerns:
+
+Controller handles HTTP requests/responses.
+
+Service layer (RecipeSer) handles business logic and database interaction.
+
+3. Get Recipe by ID
+
+@GetMapping("/{idRecipeFood}")
+public Recipefood getRecipes(@PathVariable("idRecipeFood") Integer idRecipeFood) {
+    return recipeSer.getUSRecipe(idRecipeFood);
+}
+
+
+Endpoint: GET /api/recipes/{idRecipeFood}
+
+Returns a single recipe by primary key (idRecipeFood).
+
+Uses @PathVariable to bind the ID from the URL.
+
+4. Get All Recipes
+
+@GetMapping()
+public List<Recipefood> getAllRecipes() {
+    return recipeSer.getAllRecipes();
+}
+
+
+Endpoint: GET /api/recipes
+
+Returns all recipes as a list (no pagination, no sorting).
+
+Useful for quick retrieval but not efficient for large datasets.
+
+5. Get Recipes (Paginated + Sorted)
+
+@GetMapping("/paged")
+public Map<String, Object> getAllRecipesPaged(
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int limit,
+        @RequestParam(defaultValue = "rating") String sortBy
+) {
+    Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(sortBy).descending());
+    Page<Recipefood> recipePage = recipeSer.getRecipes(pageable);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("page", page);
+    response.put("limit", limit);
+    response.put("total", recipePage.getTotalElements());
+    response.put("data", recipePage.getContent());
+
+    return response;
+}
+
+
+Endpoint: GET /api/recipes/paged?page=1&limit=10&sortBy=rating
+
+Parameters:
+
+page: Page number (1-based, internally converted to 0-based).
+
+limit: Number of results per page.
+
+sortBy: Field to sort by (default: rating, descending).
+
+Returns JSON with metadata:
+
+{
+  "page": 1,
+  "limit": 10,
+  "total": 8450,
+  "data": [ {recipe1}, {recipe2}, ... ]
+}
+
+
+Advantage: Efficient for large datasets using Spring Data pagination.
+
+6. Search Recipes
+
+@GetMapping("/search")
+public List<Recipefood> searchRecipes(
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) String cuisine,
+        @RequestParam(required = false) String calories,
+        @RequestParam(required = false) String rating,
+        @RequestParam(required = false) String totalTime
+) {
+    return recipeSer.searchRecipes(title, cuisine, calories, rating, totalTime);
+}
+
+
+Endpoint: GET /api/recipes/search?...
+
+Supports filtering based on query parameters:
+
+title → partial match (LIKE or regex).
+
+cuisine → exact match.
+
+calories, rating, totalTime → range-based queries (e.g., <=400, >=4.5).
+
+Delegates logic to recipeSer.searchRecipes, which constructs dynamic queries (SQL or JPA Criteria / MongoDB queries).
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Code:->
+
+
+package com.exam.recipe_demo.controller;
+
+
+import com.exam.recipe_demo.model.Recipefood;
+import com.exam.recipe_demo.service.RecipeSer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/recipes")
+public class recipeAPI {
+
+
+    private  final RecipeSer recipeSer;
+
+    public recipeAPI(RecipeSer recipeSer) {
+        this.recipeSer = recipeSer;
+    }
+
+    @GetMapping("/{idRecipeFood}")
+    public Recipefood getRecipes(@PathVariable("idRecipeFood") Integer idRecipeFood) {
+
+        return recipeSer.getUSRecipe(idRecipeFood);
+
+    }
+
+    @GetMapping()
+    public List<Recipefood> getAllRecipes() {
+
+        return recipeSer.getAllRecipes();
+    }
+
+    @GetMapping("/paged")
+    public Map<String, Object> getAllRecipesPaged(
+            @RequestParam(defaultValue = "1") int page,       // page starts from 1
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "rating") String sortBy  // sort by rating descending
+    ) {
+        // Spring PageRequest is 0-based, so subtract 1
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(sortBy).descending());
+        Page<Recipefood> recipePage = recipeSer.getRecipes(pageable);
+
+        // Build custom response
+        Map<String, Object> response = new HashMap<>();
+        response.put("page", page);
+        response.put("limit", limit);
+        response.put("total", recipePage.getTotalElements());
+        response.put("data", recipePage.getContent());
+
+        return response;
+    }
+
+    @GetMapping("/search")
+    public List<Recipefood> searchRecipes(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String cuisine,
+            @RequestParam(required = false) String calories,   // e.g., "<=400"
+            @RequestParam(required = false) String rating,     // e.g., ">=4.5"
+            @RequestParam(required = false) String totalTime   // e.g., "<=60"
+    ) {
+        return recipeSer.searchRecipes(title, cuisine, calories, rating, totalTime);
+    }
+
+}
