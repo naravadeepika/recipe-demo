@@ -24,41 +24,35 @@ Username: root
 
 Creating a Table and Columns: ->
 
-Here I had created a new database named as recipes.
+Here I have created a new database named as "recipes".
 
-Inside the database, created a table Recipefood with appropriate columns using the CREATE TABLE SQL command.
+Inside this database I created a table "Recipefood" with appropriate columns.
 
 Inserting JSON Data into the Table: ->
 
 Connected MySQL Workbench with vscode using the required connector installed via pip install.
 
-Parsed the provided JSON file using Python scripting.
+Parsed the provided JSON file using Python scripting.(CODE NAME ADD)
 
 Extracted values from JSON and inserted them into the Recipefood table in the database.
 
 Creating APIs idRecipeFood, Paged, and Search: ->
 
-Initialized a Spring Boot project using Spring Initializr and added the following dependencies:
-
-Spring Web
-
-Spring Data JPA
-
-MySQL Driver
+Initialized a Spring Boot project using Spring Initializr and added the dependencies Spring Web, Spring Data JPA, MySQL Driver.
 
 Built APIs using @GetMapping to handle:
 
-idRecipeFood API → Retrieve recipe by ID.
+idRecipeFood API -> Retrieve recipe by ID.
 
-Paged API → Retrieve recipes with pagination (page, limit).
+Paged API -> Retrieve recipes with pagination (page, limit).
 
-Search API → Retrieve recipes based on filters (search criteria applied on table columns).
+Search API -> Retrieve recipes based on filters (search criteria applied on table columns).
 
-Integrated Swagger UI for a user-friendly API interface.
+Integrated Swagger UI for a user-friendly API interface (By adding therequired dependencies in POM.XML)
 
 Allowed testing of endpoints directly from Swagger.
 
-Extracted cURL commands to run in the terminal to check whether we get the same output or not.
+curl commands to run in the terminal to check whether we get the same output or not.
 
 Verified API responses both via cURL commands through terminal and directly by pasting the URL in a chrome browser.
 
