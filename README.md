@@ -46,6 +46,8 @@ Initialized a Spring Boot project using Spring Initializr and added the dependen
 
 Built APIs using @GetMapping to handle:
 
+Refer "recipe_demo_controller" and "service implementation.java" files.
+
 idRecipeFood API -> Retrieve recipe by ID.
 
 sql command:
@@ -124,8 +126,8 @@ This is the frontend model that I had developed.
 
 —>this will be the generated directories:
 
-recipe-frontend
-├── README.md
+recipe-frontend:
+ README.md
 ├── node_modules
 ├── package.json
 ├── .gitignore
