@@ -32,7 +32,7 @@ Inserting JSON Data into the Table: ->
 
 Connected MySQL Workbench with vscode using the required connector installed via pip install.
 
-Parsed the provided JSON file using Python scripting.(CODE NAME ADD)
+Parsed the provided JSON file using Python scripting code "json_parse.py".
 
 Extracted values from JSON and inserted them into the Recipefood table in the database.
 
@@ -44,11 +44,61 @@ Built APIs using @GetMapping to handle:
 
 idRecipeFood API -> Retrieve recipe by ID.
 
+sql command:
+
+select * from Recipefood where idRecipeFood = 102;
+
+curl command:
+
+curl -X 'GET' \
+  'http://localhost:8080/api/recipes/paged?page=1&limit=10&sortBy=rating' \
+  -H 'accept: /'
+
+URL:
+
+http://localhost:8080/api/recipes/1
+
 Paged API -> Retrieve recipes with pagination (page, limit).
+
+sql command:
+
+SELECT * 
+FROM Recipefood
+ORDER BY rating DESC
+LIMIT 10 OFFSET 0;  -- page 1, limit 5 => offset = (1-1)*5
+
+curl command:
+
+curl -X 'GET' \
+  'http://localhost:8080/api/recipes/paged?page=1&limit=10&sortBy=rating' \
+  -H 'accept: /'
+
+URL:
+
+[http://localhost:8080/api/recipes/1](http://localhost:8080/api/recipes/paged?page=1&limit=10&sortBy=rating)
 
 Search API -> Retrieve recipes based on filters (search criteria applied on table columns).
 
-Integrated Swagger UI for a user-friendly API interface (By adding therequired dependencies in POM.XML)
+sql command:
+
+SELECT *
+FROM Recipefood
+WHERE 
+    title LIKE '%pie%'                -- partial match for title
+    AND rating >= 4.5                 -- rating >= 4.5
+    AND CAST(JSON_UNQUOTE(JSON_EXTRACT(nutrients, '$.calories')) AS UNSIGNED) <= 400;
+
+curl command:
+
+curl -X 'GET' \
+  'http://localhost:8080/api/recipes/search?title=pie&calories=%3C%3D400&rating=%3E%3D4.5' \
+  -H 'accept: /'
+
+URL:
+
+[http://localhost:8080/api/recipes/1](http://localhost:8080/api/recipes/search?title=pie&calories=%3C%3D400&rating=%3E%3D4.5)
+
+Integrated Swagger UI for a user-friendly API interface (By adding the required dependencies in POM.XML).
 
 Allowed testing of endpoints directly from Swagger.
 
